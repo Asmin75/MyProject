@@ -1,0 +1,8 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Reply Detail{% endblock %}
+{% block body %}
+<h1> Reply Details</h1>
+<h2>Post : {{replies.post}} </h2>
+Text : {{replies.text}}
+Created Date : {{replies.created_date}}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'myapp/base.html' %}
+{% block title %}Post Detail{% endblock %}
+{% block body %}
+<h1> Post Details</h1>
+<h2>Title : {{post.title}} </h2>
+Text : {{post.text}}
+Created Date : {{post.created_date}}
+Published Date : {{post.publish_date}}
+{% endblock %}
