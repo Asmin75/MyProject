@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import request, HttpResponseRedirect
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -7,6 +8,7 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from .forms import LoginForm, RegisterForm
 from .models import User, Post, Replies
+
 
 
 # def RegisterView(request):
@@ -56,24 +58,35 @@ def LoginView(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('/home/')
+                return HttpResponseRedirect('/post/')
 
 def HomeView(request):
     if request.method == 'GET':
-        return render(request, 'myapp/home.html')
+        return render(request, 'myapp/post.html')
 
 
 def MainpageView(request):
-    # login_form= LoginForm()
-    # register_form = RegisterForm()
     if request.method == 'GET':
         return render(request, 'myapp/index.html', {'login_form': LoginForm(), 'register_form': RegisterForm()})
 
 
 class PostList(ListView):
-    model = Post
-    template_name = 'myapp/post_list.html'
+    # model = Post
+    # template_name = 'myapp/post_list.html'
 
+    def get(self, request):
+        post_list = Post.objects.all()
+        page = request.GET.get('page', 1)
+
+        paginator = Paginator(post_list, 5)
+        try:
+            post = paginator.page(page)
+        except PageNotAnInteger:
+            post = paginator.page(1)
+        except EmptyPage:
+            post =paginator.page(paginator.num_pages)
+
+        return render(request, 'myapp/post_list.html', {'post_list': post})
 
 class PostDetail(DetailView):
     model = Post
@@ -83,21 +96,21 @@ class PostDetail(DetailView):
 class PostCreate(CreateView):
     model = Post
     fields = ['title', 'text', 'created_date', 'publish_date']
-    # template_name = 'myapp/post_new.html'
-    success_url = reverse_lazy('post_list')
+    template_name = 'myapp/post_new.html'
+    success_url = reverse_lazy('myapp:post_list')
 
 
 class PostUpdate(UpdateView):
     model = Post
     fields = ['title', 'text']
     template_name = 'myapp/post_edit.html'
-    success_url = reverse_lazy('post_list')
+    success_url = reverse_lazy('myapp:post_list')
 
 
 class PostDelete(DeleteView):
     model = Post
     template_name = 'myapp/post_delete.html'
-    success_url = reverse_lazy('post_list')
+    success_url = reverse_lazy('myapp:post_list')
 
 
 class ReplyList(ListView):
@@ -114,20 +127,20 @@ class ReplyCreate(CreateView):
     model = Post
     fields = ['post', 'text', 'created_date']
     template_name = 'myapp/reply_new.html'
-    success_url = reverse_lazy('post_list')
+    success_url = reverse_lazy('myapp:reply_list')
 
 
 class ReplyUpdate(UpdateView):
     model = Post
     fields = ['post', 'text']
     template_name = 'myapp/reply_edit.html'
-    success_url = reverse_lazy('post_list')
+    success_url = reverse_lazy('myapp:reply_list')
 
 
 class ReplyDelete(DeleteView):
     model = Post
     template_name = 'myapp/reply_delete.html'
-    success_url = reverse_lazy('post_list')
+    success_url = reverse_lazy('myapp:reply_list')
 
 
 

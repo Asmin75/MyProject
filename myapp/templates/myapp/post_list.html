@@ -1,6 +1,22 @@
-{% extends 'myapp/base.html' %}
-{% block title %}Post List {% endblock %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post List</title>
+    <!-- Bootstrap 4 -->
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">-->
+    <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>-->
+    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>-->
+    <!--&lt;!&ndash; Font Awesome &ndash;&gt;-->
+    <!--<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">-->
+    <!--&lt;!&ndash; Moment.js &ndash;&gt;-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>-->
+    <!--&lt;!&ndash; Tempus Dominus Bootstrap 4 &ndash;&gt;-->
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>-->
+</head>
+<body>
 <h1>Post List</h1>
 
 <table border="1">
@@ -22,13 +38,41 @@
     <td>{{ post.text }}</td>
     <td>{{ post.created_date }}</td>
     <td>{{ post.publish_date }}</td>
-    <td><a href="{% url 'post_view' post.id %}">view</a></td>
-    <td><a href="{% url 'post_edit' post.id %}">edit</a></td>
-    <td><a href="{% url 'post_delete' post.id %}">delete</a></td>
+    <td><a href="/post/{{post.id}}">view</a></td>
+    <td><a href="/post-edit/{{post.id}}">edit</a></td>
+    <td><a href="/post-delete/{{post.id}}">delete</a></td>
     </tr>
     {% endfor %}
 </tbody>
 </table>
-
-<!--<a href="{% url 'post_new' %}">New</a>-->
-{% endblock %}
+<!--<ul class="pagination pagination-primary mt-4">-->
+    <!--<li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>-->
+    <!--<li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>-->
+    <!--<li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>-->
+    <!--<li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>-->
+    <!--<li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>-->
+<!--</ul>-->
+<a href="/post-new/">New</a>
+{% if post_list.has_other_pages %}
+  <ul class="pagination">
+    {% if post_list.has_previous %}
+      <li><a href="?page={{ post_list.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in post_list.paginator.page_range %}
+      {% if post_list.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if post_list.has_next %}
+      <li><a href="?page={{ post_list.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</body>
+</html>

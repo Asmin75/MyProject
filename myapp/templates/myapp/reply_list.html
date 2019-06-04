@@ -1,6 +1,10 @@
-{% extends 'myapp/base.html' %}
-{% block title %}Reply List{% endblock %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reply List</title>
+</head>
+<body>
 <h1>
     Replies
 </h1>
@@ -21,14 +25,14 @@
     <td>{{ replies.post }}</td>
     <td>{{ replies.text }}</td>
     <td>{{ replies.created_date }}</td>
-    <td><a href="{% url 'reply_view' replies.id %}">view</a> </td>
-    <td><a href="{% url 'reply_edit' replies.id %}">edit</a> </td>
-    <td><a href="{% url 'reply_delete' replies.id %}">delete</a></td>
+    <td><a href="/reply-view/{{replies.id}}">view</a> </td>
+    <td><a href="/reply-edit/{{replies.id}}">edit</a> </td>
+    <td><a href="/reply-delete/{{replies.id}}">delete</a></td>
 
 </tr>
 {% endfor %}
 </tbody>
 </table>
-<!--<a href="{% url 'reply_new' %}">New</a>-->
-
-{% endblock %}
+<a href="/reply-new/">New</a>
+</body>
+</html>
