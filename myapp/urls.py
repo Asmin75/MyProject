@@ -14,10 +14,10 @@ urlpatterns = [
     path('login/', LoginView, name='login'),
 
     path('post/', views.PostList.as_view(), name='post_list'),
-    path('post/<int:pk>', views.PostDetail.as_view(), name='post_detail'),
+    path('post/<int:pk>', views.PostDetail.as_view(), name='post-detail'),
     path('post-new/', views.PostCreate.as_view(), name='post_new'),
-    path('post-edit/<int:pk>', views.PostUpdate.as_view(), name='post_edit'),
-    path('post-delete/<int:pk>', views.PostDelete.as_view(), name='post_delete'),
+    path('post-edit/<int:pk>', views.PostUpdate.as_view(), name='post-edit'),
+    path('post-delete/<int:pk>', views.PostDelete.as_view(), name='post-delete'),
 
     path('reply/', views.ReplyList.as_view(), name='reply_list'),
     path('reply/<int:pk>', views.ReplyDetail.as_view(), name='reply_detail'),

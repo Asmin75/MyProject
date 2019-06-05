@@ -25,23 +25,31 @@
     <th>Title</th>
     <th>Text</th>
     <th>Created Date</th>
+    {% comment %}
     <th>Publish Date</th>
+    {% endcomment %}
     <th>View</th>
     <th>Edit</th>
     <th>Delete</th>
     </tr>
 </thead>
 <tbody>
+    number of posts:{{post_list|length}}
     {% for post in post_list %}
     <tr>
-    <td>{{ post.title }}</td>
-    <td>{{ post.text }}</td>
+    <td>{{ post.title|title }}</td>
+    <td>{{ post.text|capfirst|truncatechars:10 }}</td>
     <td>{{ post.created_date }}</td>
-    <td>{{ post.publish_date }}</td>
-    <td><a href="/post/{{post.id}}">view</a></td>
-    <td><a href="/post-edit/{{post.id}}">edit</a></td>
+    {% comment "Optionalnote " %}
+        <td>{{ post.publish_date }}</td>
+    {% endcomment %}
+    <td><a href="{% url 'myapp:post-detail' post.id %}">view</a></td>
+    <td><a href="{% url 'myapp:post-edit' post.id %}">edit</a></td>
     <td><a href="/post-delete/{{post.id}}">delete</a></td>
     </tr>
+    {% empty %}
+    <h2>Sorry, no athletes is this list</h2>
+        {% ifchanged post.title %} {{post.title}} {% endifchanged %}
     {% endfor %}
 </tbody>
 </table>
