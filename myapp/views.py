@@ -8,7 +8,8 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from .forms import LoginForm, RegisterForm
 from .models import User, Post, Replies
-
+from rest_framework import viewsets
+from .serializers import UserSerializer, PostSerializer, RepliesSerializer
 
 
 # def RegisterView(request):
@@ -141,6 +142,22 @@ class ReplyDelete(DeleteView):
     model = Post
     template_name = 'myapp/reply_delete.html'
     success_url = reverse_lazy('myapp:reply_list')
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class RepliesViewSet(viewsets.ModelViewSet):
+    queryset = Replies.objects.all()
+    serializer_class = RepliesSerializer
+
 
 
 

@@ -1,7 +1,5 @@
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth.decorators import login_required
-
-
 from .views import RegisterView, LoginView, MainpageView, HomeView
 from . import views
 
@@ -24,4 +22,5 @@ urlpatterns = [
     path('reply-new/', views.ReplyCreate.as_view(), name='reply_new'),
     path('reply-edit/<int:pk>', views.ReplyUpdate.as_view(), name='reply_edit'),
     path('reply-delete/<int:pk>', views.ReplyDelete.as_view(), name='reply_delete'),
+
 ]

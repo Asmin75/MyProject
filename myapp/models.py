@@ -16,7 +16,7 @@ class User(AbstractUser):
     photo = models.ImageField(upload_to='images/', max_length=100, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.first_name
