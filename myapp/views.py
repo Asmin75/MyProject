@@ -77,17 +77,18 @@ class PostList(ListView):
 
     def get(self, request):
         post_list = Post.objects.all()
-        page = request.GET.get('page', 1)
+        # page = request.GET.get('page', 1)
+        #
+        # paginator = Paginator(post_list, 5)
+        # try:
+        #     post = paginator.page(page)
+        # except PageNotAnInteger:
+        #     post = paginator.page(1)
+        # except EmptyPage:
+        #     post =paginator.page(paginator.num_pages)
+        #
+        return render(request, 'myapp/post_list.html', {'post_list': post_list})
 
-        paginator = Paginator(post_list, 5)
-        try:
-            post = paginator.page(page)
-        except PageNotAnInteger:
-            post = paginator.page(1)
-        except EmptyPage:
-            post =paginator.page(paginator.num_pages)
-
-        return render(request, 'myapp/post_list.html', {'post_list': post})
 
 class PostDetail(DetailView):
     model = Post

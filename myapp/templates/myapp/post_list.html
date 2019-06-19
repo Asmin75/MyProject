@@ -1,8 +1,12 @@
+{% load static %}
+{% load ratings %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Post List</title>
+    <link rel="stylesheet" href="{% static 'star-ratings/css/star-ratings.css' %}">
+<script type="text/javascript" src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>
     <!-- Bootstrap 4 -->
     <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">-->
     <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
@@ -46,6 +50,7 @@
     <td><a href="{% url 'myapp:post-detail' post.id %}">view</a></td>
     <td><a href="{% url 'myapp:post-edit' post.id %}">edit</a></td>
     <td><a href="/post-delete/{{post.id}}">delete</a></td>
+    <td>{% ratings post %}</td>
     </tr>
     {% empty %}
     <h2>Sorry, no athletes is this list</h2>
