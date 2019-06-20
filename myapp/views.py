@@ -77,17 +77,17 @@ class PostList(ListView):
 
     def get(self, request):
         post_list = Post.objects.all()
-        # page = request.GET.get('page', 1)
-        #
-        # paginator = Paginator(post_list, 5)
-        # try:
-        #     post = paginator.page(page)
-        # except PageNotAnInteger:
-        #     post = paginator.page(1)
-        # except EmptyPage:
-        #     post =paginator.page(paginator.num_pages)
-        #
-        return render(request, 'myapp/post_list.html', {'post_list': post_list})
+        page = request.GET.get('page', 1)
+
+        paginator = Paginator(post_list, 5)
+        try:
+            post = paginator.page(page)
+        except PageNotAnInteger:
+            post = paginator.page(1)
+        except EmptyPage:
+            post =paginator.page(paginator.num_pages)
+
+        return render(request, 'myapp/post_list.html', {'post_list': post})
 
 
 class PostDetail(DetailView):
@@ -126,21 +126,21 @@ class ReplyDetail(DetailView):
 
 
 class ReplyCreate(CreateView):
-    model = Post
+    model = Replies
     fields = ['post', 'text', 'created_date']
     template_name = 'myapp/reply_new.html'
     success_url = reverse_lazy('myapp:reply_list')
 
 
 class ReplyUpdate(UpdateView):
-    model = Post
+    model = Replies
     fields = ['post', 'text']
     template_name = 'myapp/reply_edit.html'
     success_url = reverse_lazy('myapp:reply_list')
 
 
 class ReplyDelete(DeleteView):
-    model = Post
+    model = Replies
     template_name = 'myapp/reply_delete.html'
     success_url = reverse_lazy('myapp:reply_list')
 
