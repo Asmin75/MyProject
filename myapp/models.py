@@ -1,4 +1,7 @@
+from _decimal import Decimal
+
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.db import models
 
@@ -31,6 +34,15 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+class Postratings(models.Model):
+    rater_count = models.PositiveIntegerField(default=0, null=True)
+    total = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(10)], null=True)
+    average = models.DecimalField(max_digits=5, decimal_places=3, default=Decimal(0.0))
+    post = models.ForeignKey('Post', null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.post
 
 
 class Replies(models.Model):

@@ -1,5 +1,7 @@
 from django import forms
 
+from myapp.models import Postratings
+
 
 class LoginForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Email', 'class': 'form-control form-control-md'}))
@@ -16,3 +18,9 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Email', 'class': 'form-control form-control-md'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control form-control-md'}))
     # birth_date = forms.DateField(null=True, blank=True)
+
+
+class PostRateForm(forms.ModelForm):
+    class Meta:
+        model = Postratings
+        fields = ['total']

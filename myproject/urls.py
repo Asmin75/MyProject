@@ -30,5 +30,5 @@ urlpatterns = [
     path('', include('myapp.urls')),
     path('serializer/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('ratings/', include('star_ratings.urls', namespace='ratings')),
+    # path('ratings/', include('star_ratings.urls', namespace='ratings')),
 ]

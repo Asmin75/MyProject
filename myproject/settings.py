@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp.apps.MyappConfig',
     'rest_framework',
-    'star_ratings',
+    # 'star_ratings',
 ]
 
 MIDDLEWARE = [

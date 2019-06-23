@@ -1,24 +1,13 @@
-{% load static %}
-{% load ratings %}
+{#{% load static %}#}
+{#{% load ratings %}#}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Post List</title>
-    <link rel="stylesheet" href="{% static 'star-ratings/css/star-ratings.css' %}">
-<script type="text/javascript" src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>
-    <!-- Bootstrap 4 -->
-    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">-->
-    <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>-->
-    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>-->
-    <!--&lt;!&ndash; Font Awesome &ndash;&gt;-->
-    <!--<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">-->
-    <!--&lt;!&ndash; Moment.js &ndash;&gt;-->
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>-->
-    <!--&lt;!&ndash; Tempus Dominus Bootstrap 4 &ndash;&gt;-->
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />-->
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>-->
+{#    <link rel="stylesheet" href="{% static 'star-ratings/css/star-ratings.css' %}">#}
+{#<script type="text/javascript" src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>#}
+
 </head>
 <body>
 <h1>Post List</h1>
@@ -35,6 +24,8 @@
     <th>View</th>
     <th>Edit</th>
     <th>Delete</th>
+    <th>Rate</th>
+    <th>Average</th>
     </tr>
 </thead>
 <tbody>
@@ -50,7 +41,19 @@
     <td><a href="{% url 'myapp:post-detail' post.id %}">view</a></td>
     <td><a href="{% url 'myapp:post-edit' post.id %}">edit</a></td>
     <td><a href="/post-delete/{{post.id}}">delete</a></td>
-    <td>{% ratings post %}</td>
+    <td><form method="post" action="/post-rate/{{ post.id }}">
+        {% csrf_token %}
+    {{ rating_form.total }}
+            <input type = "submit" value="Submit"/>
+    </form> </td>
+    <td>
+        {% for rating in rating %}
+            {% if rating.post_id == post.id %}
+            {{ rating.average }}
+            {% endif %}
+            {% endfor %}
+    </td>
+{#    <td>{% ratings post %}</td>#}
     </tr>
     {% empty %}
     <h2>Sorry, no athletes is this list</h2>

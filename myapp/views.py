@@ -6,8 +6,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from django.shortcuts import render
-from .forms import LoginForm, RegisterForm
-from .models import User, Post, Replies
+from .forms import LoginForm, RegisterForm, PostRateForm
+from .models import User, Post, Replies, Postratings
 from rest_framework import viewsets
 from .serializers import UserSerializer, PostSerializer, RepliesSerializer
 
@@ -76,6 +76,8 @@ class PostList(ListView):
     # template_name = 'myapp/post_list.html'
 
     def get(self, request):
+        rating = Postratings.objects.all()
+
         post_list = Post.objects.all()
         page = request.GET.get('page', 1)
 
@@ -87,7 +89,7 @@ class PostList(ListView):
         except EmptyPage:
             post =paginator.page(paginator.num_pages)
 
-        return render(request, 'myapp/post_list.html', {'post_list': post})
+        return render(request, 'myapp/post_list.html', {'post_list': post, 'rating_form': PostRateForm, 'rating': rating})
 
 
 class PostDetail(DetailView):
@@ -107,6 +109,29 @@ class PostUpdate(UpdateView):
     fields = ['title', 'text']
     template_name = 'myapp/post_edit.html'
     success_url = reverse_lazy('myapp:post_list')
+
+
+def postrateView(request, pk):
+    form = PostRateForm(request.POST)
+    # post = Post.objects.get(pk=pk)
+    # if request.method == 'Post':
+    if form.is_valid():
+        total = form.cleaned_data['total']
+        # post.save()
+        if Postratings.objects.filter(post_id = pk).exists():
+            rating = Postratings.objects.get(post_id = pk)
+            rating.total = rating.total + total
+            rating.rater_count = rating.rater_count + 1
+            rating.average = rating.total/rating.rater_count
+            rating.save()
+        else:
+            rating = Postratings(total=total, rater_count=1, average=total, post_id=pk)
+            rating.save()
+        return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
+    else:
+        return HttpResponse("Please rate from 1 to 10 only!!!")
+
+
 
 
 class PostDelete(DeleteView):
