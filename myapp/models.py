@@ -1,5 +1,4 @@
 from _decimal import Decimal
-
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
@@ -30,16 +29,18 @@ class Post(models.Model):
     text = models.TextField()
     photo = models.ImageField(upload_to='images/', max_length=100)
     created_date = models.DateTimeField(default=timezone.now)
-    publish_date =models.DateTimeField(blank=True, null=True)
+    publish_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.title
+
 
 class Postratings(models.Model):
     rater_count = models.PositiveIntegerField(default=0, null=True)
     total = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(10)], null=True)
     average = models.DecimalField(max_digits=5, decimal_places=3, default=Decimal(0.0))
     post = models.ForeignKey('Post', null=True, blank=True, on_delete=models.CASCADE)
+    # user = models.ForeignKey('User')
 
     def __str__(self):
         return self.post

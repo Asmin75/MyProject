@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from django.shortcuts import render
-from .forms import LoginForm, RegisterForm, PostRateForm
+from .forms import LoginForm, RegisterForm, PostRateForm, ReplyPostForm
 from .models import User, Post, Replies, Postratings
 from rest_framework import viewsets
 from .serializers import UserSerializer, PostSerializer, RepliesSerializer
@@ -77,7 +77,6 @@ class PostList(ListView):
 
     def get(self, request):
         rating = Postratings.objects.all()
-
         post_list = Post.objects.all()
         page = request.GET.get('page', 1)
 
@@ -93,8 +92,27 @@ class PostList(ListView):
 
 
 class PostDetail(DetailView):
-    model = Post
-    template_name = 'myapp/post_detail.html'
+    # model = Post
+    # template_name = 'myapp/post_detail.html'
+    # form = ReplyPostForm
+
+    def get(self, request, pk):
+        rating = Postratings.objects.get(post_id=pk)
+        # print ('test')
+        # return HttpResponse(rating.post)
+        post_detail = Post.objects.get(pk=pk)
+        reply = Replies.objects.all()
+        return render(request, 'myapp/post_detail.html', {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply':reply, 'rating':rating.average})
+
+    def post(self, request, pk):
+        form = ReplyPostForm(request.POST)
+        if form.is_valid():
+            text = form.cleaned_data['text']
+            reply = Replies(text=text, post_id=pk)
+            reply.save()
+            return HttpResponse("Replied!")
+        else:
+            return HttpResponse("Couldn't Replied!")
 
 
 class PostCreate(CreateView):
@@ -132,8 +150,6 @@ def postrateView(request, pk):
         return HttpResponse("Please rate from 1 to 10 only!!!")
 
 
-
-
 class PostDelete(DeleteView):
     model = Post
     template_name = 'myapp/post_delete.html'
@@ -143,6 +159,10 @@ class PostDelete(DeleteView):
 class ReplyList(ListView):
     template_name = 'myapp/reply_list.html'
     model = Replies
+    def get(self, request, pk):
+        replies = Replies.objects.filter(post_id=pk)
+    #      post_reply = Post.objects.get(post_id=pk)
+        return render(request, 'myapp/reply_list.html', {'replies': replies})
 
 
 class ReplyDetail(DetailView):

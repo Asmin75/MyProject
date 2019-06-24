@@ -28,6 +28,7 @@
     <th>Total</th>
     <th>Raters</th>
     <th>Average</th>
+    <th>Replies</th>
     </tr>
 </thead>
 <tbody>
@@ -72,6 +73,7 @@
             {% endif %}
         {% endfor %}
     </td>
+    <td><a href="{% url 'myapp:reply_list' post.id%}">Replies</a></td>
 
 {#    <td>{% ratings post %}</td>#}
     </tr>
