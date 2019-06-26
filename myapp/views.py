@@ -1,3 +1,5 @@
+from itertools import count
+
 from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import request, HttpResponseRedirect
@@ -10,6 +12,7 @@ from .forms import LoginForm, RegisterForm, PostRateForm, ReplyPostForm
 from .models import User, Post, Replies, Postratings
 from rest_framework import viewsets
 from .serializers import UserSerializer, PostSerializer, RepliesSerializer
+from django.db.models import Avg,Sum
 
 
 # def RegisterView(request):
@@ -59,6 +62,8 @@ def LoginView(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 login(request, user)
+                userdetail=User.objects.get(email=email)
+                request.session['user_id'] = userdetail.id
                 return HttpResponseRedirect('/post/')
 
 def HomeView(request):
@@ -91,18 +96,37 @@ class PostList(ListView):
         return render(request, 'myapp/post_list.html', {'post_list': post, 'rating_form': PostRateForm, 'rating': rating})
 
 
-class PostDetail(DetailView):
+class PostDetail(View):
     # model = Post
     # template_name = 'myapp/post_detail.html'
     # form = ReplyPostForm
 
     def get(self, request, pk):
-        rating = Postratings.objects.get(post_id=pk)
-        # print ('test')
-        # return HttpResponse(rating.post)
         post_detail = Post.objects.get(pk=pk)
         reply = Replies.objects.all()
-        return render(request, 'myapp/post_detail.html', {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply':reply, 'rating':rating.average})
+        try:
+            # 'area').annotate(Count('area'))
+            ratings=Postratings.objects.filter(post_id=pk).aggregate(Avg('rate'))
+            # ratings = Postratings.objects.annotate(total=Sum('rate'))
+            #count=Postratings.objects.filter(post_id=pk).count()
+            # for rating in ratings:
+            # for rating in ratings:
+            #     total+=rating.rate
+            # # average=total/count
+            # return HttpResponse(a)
+            # return HttpResponse(average)
+            return render(request, 'myapp/post_detail.html',
+                           {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply': reply,
+                            'rating': ratings})
+        except:
+
+            return render(request, 'myapp/post_detail.html',
+                          {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply': reply})
+
+        # print ('test')
+        # return HttpResponse(rating.post)
+
+
 
     def post(self, request, pk):
         form = ReplyPostForm(request.POST)
@@ -116,6 +140,7 @@ class PostDetail(DetailView):
 
 
 class PostCreate(CreateView):
+
     model = Post
     fields = ['title', 'text', 'created_date', 'publish_date']
     template_name = 'myapp/post_new.html'
@@ -134,20 +159,36 @@ def postrateView(request, pk):
     # post = Post.objects.get(pk=pk)
     # if request.method == 'Post':
     if form.is_valid():
-        total = form.cleaned_data['total']
-        # post.save()
-        if Postratings.objects.filter(post_id = pk).exists():
-            rating = Postratings.objects.get(post_id = pk)
-            rating.total = rating.total + total
-            rating.rater_count = rating.rater_count + 1
-            rating.average = rating.total/rating.rater_count
-            rating.save()
+        rate=form.cleaned_data['rate']
+        if Postratings.objects.filter(post_id=pk).filter(user_id=request.session['user_id']).exists():
+            Postratings.objects.filter(post_id=pk).filter(user_id=request.session['user_id']).update(rate=rate)
+
+
+            return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
         else:
-            rating = Postratings(total=total, rater_count=1, average=total, post_id=pk)
+            rating=Postratings(rate=rate, user_id=request.session['user_id'], post_id=pk)
             rating.save()
-        return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
-    else:
-        return HttpResponse("Please rate from 1 to 10 only!!!")
+            return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
+    #     total = form.cleaned_data['total']
+    #     # post.save()
+    #     if Postratings.objects.filter(post_id = pk).exists():
+    #         rating = Postratings.objects.get(post_id = pk)
+    #         rating.total = rating.total + total
+    #         rating.rater_count = rating.rater_count + 1
+    #         rating.average = rating.total/rating.rater_count
+    #         rating.save()
+    #     else:
+    #         rating = Postratings(total=total, rater_count=1, average=total, post_id=pk)
+    #         rating.save()
+    #     return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
+    # else:
+    #     return HttpResponse("Please rate from 1 to 10 only!!!")
+    #
+
+
+
+
+
 
 
 class PostDelete(DeleteView):
@@ -168,26 +209,29 @@ class ReplyList(ListView):
 class ReplyDetail(DetailView):
     model = Replies
     template_name = 'myapp/reply_detail.html'
+    def get(self, request, pk):
+        replies = Replies.objects.get(post_id=pk)
+        return render(request, 'myapp/reply_detail.html', {'replies':replies})
 
 
 class ReplyCreate(CreateView):
     model = Replies
     fields = ['post', 'text', 'created_date']
     template_name = 'myapp/reply_new.html'
-    success_url = reverse_lazy('myapp:reply_list')
+    success_url = reverse_lazy('myapp:post_list')
 
 
 class ReplyUpdate(UpdateView):
     model = Replies
     fields = ['post', 'text']
     template_name = 'myapp/reply_edit.html'
-    success_url = reverse_lazy('myapp:reply_list')
+    success_url = reverse_lazy('myapp:post_list')
 
 
 class ReplyDelete(DeleteView):
     model = Replies
     template_name = 'myapp/reply_delete.html'
-    success_url = reverse_lazy('myapp:reply_list')
+    success_url = reverse_lazy('myapp:post_list')
 
 
 class UserViewSet(viewsets.ModelViewSet):

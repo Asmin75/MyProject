@@ -10,6 +10,7 @@
 
 </head>
 <body>
+{% if user.is_authenticated %}
 <h1>Post List</h1>
 
 <table border="1">
@@ -25,8 +26,7 @@
     <th>Edit</th>
     <th>Delete</th>
     <th>Rate</th>
-    <th>Total</th>
-    <th>Raters</th>
+
     <th>Average</th>
     <th>Replies</th>
     </tr>
@@ -46,32 +46,29 @@
     <td><a href="/post-delete/{{post.id}}">delete</a></td>
     <td><form method="post" action="/post-rate/{{ post.id }}">
         {% csrf_token %}
-    {{ rating_form.total }}
+    {{ rating_form.rate }}
             <input type = "submit" value="Submit"/>
     </form>
     </td>
 
+{#    <td>#}
+{#        {% for rating in rating %}#}
+{#            {% if rating.post_id == post.id %}#}
+{#        {{ rating.total }}#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#    </td>#}
+{#    <td>#}
+{#        {% for rating in rating %}#}
+{#        {% if rating.post_id == post.id %}#}
+{#        {{ rating.rater_count }}#}
+{#        {% endif %}#}
+{##}
+{#        {% endfor %}#}
+{#    </td>#}
     <td>
-        {% for rating in rating %}
-            {% if rating.post_id == post.id %}
-        {{ rating.total }}
-            {% endif %}
-        {% endfor %}
-    </td>
-    <td>
-        {% for rating in rating %}
-        {% if rating.post_id == post.id %}
-        {{ rating.rater_count }}
-        {% endif %}
 
-        {% endfor %}
-    </td>
-    <td>
-        {% for rating in rating %}
-            {% if rating.post_id == post.id %}
-            {{ rating.average }}
-            {% endif %}
-        {% endfor %}
+
     </td>
     <td><a href="{% url 'myapp:reply_list' post.id%}">Replies</a></td>
 
@@ -111,6 +108,11 @@
       <li class="disabled"><span>&raquo;</span></li>
     {% endif %}
   </ul>
+{% endif %}
+<p><a href="{% url 'logout' %}">Logout</a></p>
+{% else %}
+    <p> You are not logged in</p>
+    <a href={% url 'myapp:main' %}>Login</a>
 {% endif %}
 </body>
 </html>

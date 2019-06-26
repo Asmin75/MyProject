@@ -3,7 +3,7 @@
 {% block body %}
 <h1> Post Details</h1>
 <h2>Title : {{post_detail.title}} </h2>
-<h2>Rate: {{ rating }}</h2>
+<h2>Rate: {{ rating.rate__avg }}</h2>
 Text : {{post_detail.text}}
 Created Date : {{post_detail.created_date}}
 Published Date : {{post_detail.publish_date}}

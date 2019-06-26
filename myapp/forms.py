@@ -23,7 +23,7 @@ class RegisterForm(forms.Form):
 class PostRateForm(forms.ModelForm):
     class Meta:
         model = Postratings
-        fields = ['total']
+        fields = ['rate']
 
 
 class ReplyPostForm(forms.ModelForm):
