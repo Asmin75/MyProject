@@ -16,7 +16,7 @@ Reply :
 </form>
 Rate Post
 
-<form method="post">
+<form method="POST" action="/post-rate/{{ post_detail.id }}">
         {% csrf_token %}
     {{ rating_form.rate }}
             <input type = "submit" value="Submit"/>
