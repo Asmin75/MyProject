@@ -14,4 +14,11 @@ Reply :
     {{replyform.text}}
     <input type = "submit" value="Submit"/>
 </form>
+Rate Post
+
+<form method="post">
+        {% csrf_token %}
+    {{ rating_form.rate }}
+            <input type = "submit" value="Submit"/>
+    </form>
 {% endblock %}

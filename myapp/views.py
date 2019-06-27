@@ -81,7 +81,6 @@ class PostList(ListView):
     # template_name = 'myapp/post_list.html'
 
     def get(self, request):
-        rating = Postratings.objects.all()
         post_list = Post.objects.all()
         page = request.GET.get('page', 1)
 
@@ -93,7 +92,7 @@ class PostList(ListView):
         except EmptyPage:
             post =paginator.page(paginator.num_pages)
 
-        return render(request, 'myapp/post_list.html', {'post_list': post, 'rating_form': PostRateForm, 'rating': rating})
+        return render(request, 'myapp/post_list.html', {'post_list': post, 'rating_form': PostRateForm})
 
 
 class PostDetail(View):
@@ -105,38 +104,47 @@ class PostDetail(View):
         post_detail = Post.objects.get(pk=pk)
         reply = Replies.objects.all()
         try:
-            # 'area').annotate(Count('area'))
-            ratings=Postratings.objects.filter(post_id=pk).aggregate(Avg('rate'))
-            # ratings = Postratings.objects.annotate(total=Sum('rate'))
-            #count=Postratings.objects.filter(post_id=pk).count()
-            # for rating in ratings:
-            # for rating in ratings:
-            #     total+=rating.rate
-            # # average=total/count
-            # return HttpResponse(a)
-            # return HttpResponse(average)
+            ratings = Postratings.objects.filter(post_id=pk).aggregate(Avg('rate'))
             return render(request, 'myapp/post_detail.html',
                            {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply': reply,
-                            'rating': ratings})
+                            'rating': ratings, 'rating_form': PostRateForm})
         except:
 
             return render(request, 'myapp/post_detail.html',
-                          {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply': reply})
+                          {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply': reply, 'rating_form': PostRateForm})
 
         # print ('test')
         # return HttpResponse(rating.post)
 
 
 
+    # def post(self, request, pk):
+    #     reply_form = ReplyPostForm(request.POST)
+    #
+    #     if reply_form.is_valid():
+    #         text = reply_form.cleaned_data['text']
+    #         reply = Replies(text=text, post_id=pk)
+    #         reply.save()
+    #         return HttpResponse("Replied!")
+    #     else:
+    #         return HttpResponse("Couldn't Replied!")
+
     def post(self, request, pk):
-        form = ReplyPostForm(request.POST)
+        form = PostRateForm(request.POST)
+
         if form.is_valid():
-            text = form.cleaned_data['text']
-            reply = Replies(text=text, post_id=pk)
-            reply.save()
-            return HttpResponse("Replied!")
+            rate = form.cleaned_data['rate']
+            if Postratings.objects.filter(post_id=pk).filter(user_id=request.session['user_id']).exists():
+                Postratings.objects.filter(post_id=pk).filter(user_id=request.session['user_id']).update(rate=rate)
+                return HttpResponse("Rated!!")
+                # return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
+            else:
+                rating = Postratings(rate=rate, user_id=request.session['user_id'], post_id=pk)
+                rating.save()
+                return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
         else:
-            return HttpResponse("Couldn't Replied!")
+            return HttpResponse("Must rate from 1 to 5 only!!")
+
 
 
 class PostCreate(CreateView):
@@ -153,22 +161,6 @@ class PostUpdate(UpdateView):
     template_name = 'myapp/post_edit.html'
     success_url = reverse_lazy('myapp:post_list')
 
-
-def postrateView(request, pk):
-    form = PostRateForm(request.POST)
-    # post = Post.objects.get(pk=pk)
-    # if request.method == 'Post':
-    if form.is_valid():
-        rate=form.cleaned_data['rate']
-        if Postratings.objects.filter(post_id=pk).filter(user_id=request.session['user_id']).exists():
-            Postratings.objects.filter(post_id=pk).filter(user_id=request.session['user_id']).update(rate=rate)
-
-
-            return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
-        else:
-            rating=Postratings(rate=rate, user_id=request.session['user_id'], post_id=pk)
-            rating.save()
-            return HttpResponseRedirect('/post/?message=rated&post&%s' % (pk))
     #     total = form.cleaned_data['total']
     #     # post.save()
     #     if Postratings.objects.filter(post_id = pk).exists():
