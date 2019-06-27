@@ -47,6 +47,19 @@ class Postratings(models.Model):
     #     return self.post
 
 
+class Questions(models.Model):
+    question = models.TextField()
+    publish_date = models.DateTimeField(default=timezone.now)
+
+
+class Questionratings(models.Model):
+    rate = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)], null=True)
+    average = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(0.0))
+    question = models.ForeignKey('Questions', null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey('User', null=True, on_delete=models.CASCADE)
+
+
+
 class Replies(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     text = models.TextField()

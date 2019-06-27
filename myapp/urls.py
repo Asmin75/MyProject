@@ -23,4 +23,8 @@ urlpatterns = [
     path('reply-edit/<int:pk>', views.ReplyUpdate.as_view(), name='reply_edit'),
     path('reply-delete/<int:pk>', views.ReplyDelete.as_view(), name='reply_delete'),
 
+    path('question/', views.QuestionListView.as_view(), name='question-list'),
+    path('question/<int:pk>', views.QuestionDetailView.as_view(), name='question-detail'),
+    path('question-new/', views.QuestionCreate.as_view(), name='question-new'),
+
 ]

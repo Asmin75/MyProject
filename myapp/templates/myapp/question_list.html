@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Question List</title>
+</head>
+<body>
+{% if user.is_authenticated %}
+<h1>Question List</h1>
+
+<table border="1">
+<thead>
+    <tr>
+    <th>Question</th>
+    <th>Publish Date</th>
+    <th>View</th>
+<!--    <th>Edit</th>-->
+<!--    <th>Delete</th>-->
+    </tr>
+</thead>
+<tbody>
+{% for question in question_list %}
+    <tr>
+        <td>{{question.question }}</td>
+        <td>{{question.publish_date}}</td>
+        <td><a href="{% url 'myapp:question-detail' question.id %}">view</a></td>
+    </tr>
+{% endfor %}
+</tbody>
+<a href="{% url 'myapp:question-new' %}">New</a>
+<p><a href="{% url 'logout' %}">Logout</a></p>
+{% else %}
+    <p> You are not logged in</p>
+    <a href={% url 'myapp:main' %}>Login</a>
+{% endif %}
+</body>
+</html>

@@ -1,6 +1,6 @@
 from django import forms
 
-from myapp.models import Postratings, Replies
+from myapp.models import Postratings, Replies, Questionratings
 
 
 class LoginForm(forms.Form):
@@ -25,6 +25,11 @@ class PostRateForm(forms.ModelForm):
         model = Postratings
         fields = ['rate']
 
+
+class QuestionRateForm(forms.ModelForm):
+    class Meta:
+        model = Questionratings
+        fields = ['rate']
 
 class ReplyPostForm(forms.ModelForm):
     class Meta:

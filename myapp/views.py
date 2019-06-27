@@ -8,8 +8,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from django.shortcuts import render
-from .forms import LoginForm, RegisterForm, PostRateForm, ReplyPostForm
-from .models import User, Post, Replies, Postratings
+from .forms import LoginForm, RegisterForm, PostRateForm, ReplyPostForm, QuestionRateForm
+from .models import User, Post, Replies, Postratings, Questions, Questionratings
 from rest_framework import viewsets
 from .serializers import UserSerializer, PostSerializer, RepliesSerializer
 from django.db.models import Avg,Sum
@@ -96,9 +96,6 @@ class PostList(ListView):
 
 
 class PostDetail(View):
-    # model = Post
-    # template_name = 'myapp/post_detail.html'
-    # form = ReplyPostForm
 
     def get(self, request, pk):
         post_detail = Post.objects.get(pk=pk)
@@ -113,8 +110,6 @@ class PostDetail(View):
             return render(request, 'myapp/post_detail.html',
                           {'post_detail': post_detail, 'replyform': ReplyPostForm, 'reply': reply, 'rating_form': PostRateForm})
 
-        # print ('test')
-        # return HttpResponse(rating.post)
 
 
 
@@ -146,9 +141,7 @@ class PostDetail(View):
             return HttpResponse("Must rate from 1 to 5 only!!")
 
 
-
 class PostCreate(CreateView):
-
     model = Post
     fields = ['title', 'text', 'created_date', 'publish_date']
     template_name = 'myapp/post_new.html'
@@ -226,6 +219,43 @@ class ReplyDelete(DeleteView):
     success_url = reverse_lazy('myapp:post_list')
 
 
+class QuestionListView(ListView):
+    def get(self, request):
+        question_list = Questions.objects.all()
+        return render(request, 'myapp/question_list.html', {'question_list': question_list})
+
+
+class QuestionDetailView(DetailView):
+    def get(self, request, pk):
+        question_detail = Questions.objects.get(pk=pk)
+        rating = Questionratings.objects.filter(question_id=pk).aggregate(Avg('rate'))
+        # return HttpResponse(rating)
+        return render(request, 'myapp/question_detail.html',
+                      {'question_detail': question_detail, 'rating_form': QuestionRateForm, 'rating': rating})
+
+    def post(self, request, pk):
+        form = QuestionRateForm(request.POST)
+        if form.is_valid():
+            rate = form.cleaned_data['rate']
+            if Questionratings.objects.filter(question_id=pk).filter(user_id=request.session['user_id']).exists():
+                Questionratings.objects.filter(question_id=pk).filter(user_id=request.session['user_id']).update(rate=rate)
+                return HttpResponse("Rated!!")
+            else:
+                rating = Questionratings(rate=rate, user_id=request.session['user_id'], question_id=pk)
+                rating.save()
+                return HttpResponse("Rated!!")
+        else:
+            return HttpResponse("Must rate from 1 to 5 only!!")
+
+
+class QuestionCreate(CreateView):
+    model = Questions
+    fields = ['question', 'publish_date']
+    template_name = 'myapp/question_new.html'
+    success_url = reverse_lazy('myapp:question-list')
+
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
@@ -239,9 +269,6 @@ class PostViewSet(viewsets.ModelViewSet):
 class RepliesViewSet(viewsets.ModelViewSet):
     queryset = Replies.objects.all()
     serializer_class = RepliesSerializer
-
-
-
 
 
 
