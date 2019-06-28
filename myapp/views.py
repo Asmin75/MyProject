@@ -203,13 +203,25 @@ class ReplyCreate(CreateView):
 
 class ReplyUpdate(UpdateView):
     model = Replies
-    fields = ['post', 'text']
+    fields = ['post', 'text', 'created_date']
     template_name = 'myapp/reply_edit.html'
     # success_url = reverse_lazy('myapp:post_list')
 
-    def get_success_url(self):
-        post = self.object.post
-        return reverse_lazy('myapp:reply_list', kwargs={'pk':post.pk})
+    def get(self, request, pk):
+        edit = Replies.objects.filter(pk=pk)
+        edit_form = ReplyPostForm()
+        return render(request, 'myapp/reply_edit.html', {'edit': edit, 'edit_form': edit_form})
+
+    def post(self, request, pk):
+        form = ReplyPostForm(request.POST)
+
+        if form.is_valid():
+            text = form.cleaned_data['text']
+            created_date = form.cleaned_data['created_date']
+            reply = Replies(text=text, created_date=created_date, post_id=pk)
+            reply.save()
+            return HttpResponseRedirect('/reply/%s' % (pk))
+            # return HttpResponseRedirect('myapp:reply_list', kwargs={'pk':post.pk})
 
 
 class ReplyDelete(DeleteView):
