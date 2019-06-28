@@ -15,18 +15,6 @@ from .serializers import UserSerializer, PostSerializer, RepliesSerializer
 from django.db.models import Avg,Sum
 
 
-# def RegisterView(request):
-#     form_class = RegisterForm()
-#     return render(request, '')
-
-
-# def IndexView(request):
-#     login_form= LoginForm()
-#     register_form = RegisterForm()
-#     # template_name = 'myapp/login.html'
-#     return render(request, 'myapp/index.html', {'login_form': login_form, 'register_form': register_form})
-
-
 def RegisterView(request):
     form = RegisterForm(request.POST)
     login_form = LoginForm()
@@ -52,7 +40,6 @@ def LoginView(request):
     form = LoginForm(request.POST)
     register_form = RegisterForm()
     if request.method == 'POST':
-        # return HttpResponse("aaa")
 
         if form.is_valid():
 
@@ -120,6 +107,7 @@ class PostDetail(View):
         else:
             return HttpResponse("Couldn't Replied!")
 
+
 def postrateView(request, pk):
     form = PostRateForm(request.POST)
     if request.method == 'POST':
@@ -168,11 +156,6 @@ class PostUpdate(UpdateView):
     #
 
 
-
-
-
-
-
 class PostDelete(DeleteView):
     model = Post
     template_name = 'myapp/post_delete.html'
@@ -200,10 +183,6 @@ class ReplyDetail(DetailView):
 
 
 class ReplyCreate(CreateView):
-    # model = Replies
-    # fields = ['post', 'text', 'created_date']
-    # template_name = 'myapp/reply_new.html'
-    # success_url = reverse_lazy('myapp:reply_list')
     def get(self, request, pk):
         replies = Replies.objects.filter(pk=pk)
         reply_form = ReplyPostForm()
@@ -226,13 +205,16 @@ class ReplyUpdate(UpdateView):
     model = Replies
     fields = ['post', 'text']
     template_name = 'myapp/reply_edit.html'
-    success_url = reverse_lazy('myapp:post_list')
+    # success_url = reverse_lazy('myapp:post_list')
+
+    def get_success_url(self):
+        post = self.object.post
+        return reverse_lazy('myapp:reply_list', kwargs={'pk':post.pk})
 
 
 class ReplyDelete(DeleteView):
     model = Replies
     template_name = 'myapp/reply_delete.html'
-    # success_url = reverse_lazy('myapp:reply_list')
 
     def get_success_url(self):
         post = self.object.post
