@@ -189,6 +189,7 @@ class ReplyList(ListView):
         return render(request, 'myapp/reply_list.html', {'replies': replies, 'post_id': pk})
         # return render(request, 'myapp/reply_list.html', {'replies': replies})
 
+
 class ReplyDetail(DetailView):
     model = Replies
     template_name = 'myapp/reply_detail.html'
@@ -221,8 +222,6 @@ class ReplyCreate(CreateView):
             return HttpResponse("Couldn't Replied!")
 
 
-
-
 class ReplyUpdate(UpdateView):
     model = Replies
     fields = ['post', 'text']
@@ -233,7 +232,11 @@ class ReplyUpdate(UpdateView):
 class ReplyDelete(DeleteView):
     model = Replies
     template_name = 'myapp/reply_delete.html'
-    success_url = reverse_lazy('myapp:post_list')
+    # success_url = reverse_lazy('myapp:reply_list')
+
+    def get_success_url(self):
+        post = self.object.post
+        return reverse_lazy('myapp:reply_list', kwargs={'pk': post.pk})
 
 
 class QuestionListView(ListView):
