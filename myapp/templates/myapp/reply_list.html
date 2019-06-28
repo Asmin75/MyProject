@@ -33,6 +33,11 @@
 {% endfor %}
 </tbody>
 </table>
-<a href="/reply-new/">New</a>
+<!--{% for replies in replies %}-->
+<!--{% if forloop.first %}-->
+<!--<a href="/reply-new/{{replies.post_id}}">New</a>-->
+<!--{% endif %}-->
+<!--{% endfor %}-->
+<a href="/reply-new/{{post_id}}">New</a>
 </body>
 </html>

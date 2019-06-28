@@ -2,9 +2,10 @@
 {% block title %}Reply New{% endblock %}
 {% block body %}
 <h1>Reply New</h1>
-<form method="post">
+<form method="POST">
     {% csrf_token %}
-    {{form.as_p}}
+    Text:{{reply_form.text}}
+    Created date:{{reply_form.created_date}}
     <input type = "submit" value="Submit"/>
 </form>
 {% endblock %}

@@ -34,4 +34,4 @@ class QuestionRateForm(forms.ModelForm):
 class ReplyPostForm(forms.ModelForm):
     class Meta:
         model = Replies
-        fields = ['text']
+        fields = ['text', 'created_date']

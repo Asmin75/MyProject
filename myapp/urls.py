@@ -19,8 +19,8 @@ urlpatterns = [
     path('post-rate/<int:pk>', views.postrateView, name='post-rate'),
 
     path('reply/<int:pk>', views.ReplyList.as_view(), name='reply_list'),
-    path('reply/<int:pk>', views.ReplyDetail.as_view(), name='reply_detail'),
-    path('reply-new/', views.ReplyCreate.as_view(), name='reply_new'),
+    path('reply-view/<int:pk>', views.ReplyDetail.as_view(), name='reply_detail'),
+    path('reply-new/<int:pk>', views.ReplyCreate.as_view(), name='reply_new'),
     path('reply-edit/<int:pk>', views.ReplyUpdate.as_view(), name='reply_edit'),
     path('reply-delete/<int:pk>', views.ReplyDelete.as_view(), name='reply_delete'),
 

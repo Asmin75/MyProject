@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import request, HttpResponseRedirect
 from django.http import HttpResponse
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from django.shortcuts import render
@@ -182,25 +182,45 @@ class PostDelete(DeleteView):
 class ReplyList(ListView):
     template_name = 'myapp/reply_list.html'
     model = Replies
+
     def get(self, request, pk):
         replies = Replies.objects.filter(post_id=pk)
     #      post_reply = Post.objects.get(post_id=pk)
-        return render(request, 'myapp/reply_list.html', {'replies': replies})
-
+        return render(request, 'myapp/reply_list.html', {'replies': replies, 'post_id': pk})
+        # return render(request, 'myapp/reply_list.html', {'replies': replies})
 
 class ReplyDetail(DetailView):
     model = Replies
     template_name = 'myapp/reply_detail.html'
+
     def get(self, request, pk):
-        replies = Replies.objects.get(post_id=pk)
-        return render(request, 'myapp/reply_detail.html', {'replies':replies})
+        replies = Replies.objects.get(pk=pk)
+        return render(request, 'myapp/reply_detail.html', {'replies': replies})
 
 
 class ReplyCreate(CreateView):
-    model = Replies
-    fields = ['post', 'text', 'created_date']
-    template_name = 'myapp/reply_new.html'
-    success_url = reverse_lazy('myapp:post_list')
+    # model = Replies
+    # fields = ['post', 'text', 'created_date']
+    # template_name = 'myapp/reply_new.html'
+    # success_url = reverse_lazy('myapp:reply_list')
+    def get(self, request, pk):
+        replies = Replies.objects.filter(pk=pk)
+        reply_form = ReplyPostForm()
+        return render(request, 'myapp/reply_new.html', {'replies': replies, 'reply_form': reply_form})
+
+    def post(self, request, pk):
+        reply_form = ReplyPostForm(request.POST)
+
+        if reply_form.is_valid():
+            text = reply_form.cleaned_data['text']
+            created_date = reply_form.cleaned_data['created_date']
+            reply = Replies(text=text, created_date=created_date, post_id=pk)
+            reply.save()
+            return HttpResponseRedirect('/reply/%s' % (pk))
+        else:
+            return HttpResponse("Couldn't Replied!")
+
+
 
 
 class ReplyUpdate(UpdateView):
@@ -250,7 +270,6 @@ class QuestionCreate(CreateView):
     fields = ['question', 'publish_date']
     template_name = 'myapp/question_new.html'
     success_url = reverse_lazy('myapp:question-list')
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
