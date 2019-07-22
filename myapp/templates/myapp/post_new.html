@@ -2,9 +2,19 @@
 {% block title %}New POst{% endblock %}
 {% block body %}
 <h1>Post New</h1>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form.as_p}}
+{#    {{form.as_p}}#}
+    Title:{{post_form.title}} <br />
+     <br />
+    text:{{post_form.text}} <br />
+     <br />
+    photo:{{post_form.photo}} <br />
+     <br />
+    created_date:{{post_form.created_date}} <br />
+     <br />
+    publish_date:{{post_form.publish_date}} <br />
+ <br />
     <input type = "submit" value="Submit"/>
 </form>
 {% endblock %}

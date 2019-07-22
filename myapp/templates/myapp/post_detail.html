@@ -8,6 +8,8 @@ Text : {{post_detail.text}}
 Created Date : {{post_detail.created_date}}
 Published Date : {{post_detail.publish_date}}
     <br/>
+Photo : <img src="{{ post_detail.photo.url }}" alt="image" width="100" height="100"/>
+<br/>
 Reply :
 <form method="post">
     {% csrf_token %}

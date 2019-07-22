@@ -17,6 +17,9 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 from myapp import views
 
@@ -28,8 +31,10 @@ router.register(r'replies', views.RepliesViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('myapp.urls')),
-    path('accounts/',include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('serializer/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # path('ratings/', include('star_ratings.urls', namespace='ratings')),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

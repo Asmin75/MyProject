@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.db import models
+from django.core.validators import FileExtensionValidator
+
 
 # Create your models here.
 
@@ -27,7 +29,7 @@ class User(AbstractUser):
 class Post(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
-    photo = models.ImageField(upload_to='images/', max_length=100)
+    photo = models.ImageField(verbose_name='Imagen', upload_to='images/', blank=True, null=True, validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'gif'])])
     created_date = models.DateTimeField(default=timezone.now)
     publish_date = models.DateTimeField(blank=True, null=True)
 
@@ -57,7 +59,6 @@ class Questionratings(models.Model):
     average = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(0.0))
     question = models.ForeignKey('Questions', null=True, on_delete=models.CASCADE)
     user = models.ForeignKey('User', null=True, on_delete=models.CASCADE)
-
 
 
 class Replies(models.Model):

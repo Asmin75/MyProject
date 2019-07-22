@@ -8,7 +8,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from django.shortcuts import render
-from .forms import LoginForm, RegisterForm, PostRateForm, ReplyPostForm, QuestionRateForm
+from .forms import LoginForm, RegisterForm, PostRateForm, ReplyPostForm, QuestionRateForm, PostForm
 from .models import User, Post, Replies, Postratings, Questions, Questionratings
 from rest_framework import viewsets
 from .serializers import UserSerializer, PostSerializer, RepliesSerializer
@@ -86,6 +86,7 @@ class PostDetail(View):
 
     def get(self, request, pk):
         post_detail = Post.objects.get(pk=pk)
+
         reply = Replies.objects.all()
         try:
             ratings = Postratings.objects.filter(post_id=pk).aggregate(Avg('rate'))
@@ -126,11 +127,35 @@ def postrateView(request, pk):
             return HttpResponse("Must rate from 1 to 5 only!!")
 
 
-class PostCreate(CreateView):
-    model = Post
-    fields = ['title', 'text', 'created_date', 'publish_date']
-    template_name = 'myapp/post_new.html'
-    success_url = reverse_lazy('myapp:post_list')
+class PostCreate(View):
+    # model = Post
+    # form_class =PostForm
+    # # fields = ['title', 'text', 'created_date', 'publish_date', 'photo']
+    # template_name = 'myapp/post_new.html'
+    # success_url = reverse_lazy('myapp:post_list')
+    def get(self, request):
+        post = Post.objects.all()
+        post_form = PostForm()
+        return render(request, 'myapp/post_new.html', {'post':post, 'post_form': post_form})
+
+    def post(self, request):
+        form = PostForm(request.POST,  request.FILES)
+
+        if form.is_valid():
+
+            title = form.cleaned_data['title']
+            text = form.cleaned_data['text']
+            created_date = form.cleaned_data['created_date']
+            publish_date = form.cleaned_data['publish_date']
+            photo = request.FILES['photo']
+            form = Post(title=title, text=text, created_date=created_date, publish_date=publish_date, photo=photo)
+            form.save()
+            return HttpResponse("Posted")
+            # return render(request, 'myapp/post_list.html', {'form': form})
+        else:
+            post_form = PostForm()
+            # return HttpResponse("Form is not valid!!")
+        return render(request, 'myapp/post_new.html', {'post_form': post_form})
 
 
 class PostUpdate(UpdateView):

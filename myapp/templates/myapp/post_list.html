@@ -27,6 +27,7 @@
     <th>Delete</th>
 <!--    <th>Rate</th>-->
     <th>Replies</th>
+    <th>Image</th>
     </tr>
 </thead>
 <tbody>
@@ -50,7 +51,7 @@
 
 <!--    </td>-->
     <td><a href="{% url 'myapp:reply_list' post.id%}">Replies</a></td>
-
+    <td>{{ post.photo }}</td>
 {#    <td>{% ratings post %}</td>#}
     </tr>
     {% empty %}

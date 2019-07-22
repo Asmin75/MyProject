@@ -1,6 +1,6 @@
 from django import forms
 
-from myapp.models import Postratings, Replies, Questionratings
+from myapp.models import Postratings, Replies, Questionratings, Post
 
 
 class LoginForm(forms.Form):
@@ -19,6 +19,15 @@ class RegisterForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control form-control-md'}))
     # birth_date = forms.DateField(null=True, blank=True)
 
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'text', 'photo', 'created_date', 'publish_date']
+
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.fields['photo'].required = False
 
 class PostRateForm(forms.ModelForm):
     class Meta:
